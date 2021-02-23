@@ -3,8 +3,7 @@ use bevy::prelude::*;
 
 /// Keeps track of mouse motion events, pitch, and yaw
 #[derive(Default)]
-struct InputState<'a> {
-    reader_motion: EventReader<'a, MouseMotion>,
+struct InputState {
     pitch: f32,
     yaw: f32,
 }
@@ -89,11 +88,12 @@ fn player_look(
     settings: Res<MovementSettings>,
     windows: Res<Windows>,
     mut state: ResMut<InputState>,
+    mut mouse_motion_events: EventReader<MouseMotion>,
     mut query: Query<(&FlyCam, &mut Transform)>,
 ) {
     let window = windows.get_primary().unwrap();
     for (_camera, mut transform) in query.iter_mut() {
-        for ev in state.reader_motion.iter() {
+        for ev in mouse_motion_events.iter() {
             if window.cursor_locked() {
                 state.pitch -= (settings.sensitivity * ev.delta.y * window.height()).to_radians();
                 state.yaw -= (settings.sensitivity * ev.delta.x * window.width()).to_radians();
