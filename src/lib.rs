@@ -3,8 +3,8 @@ use bevy::prelude::*;
 
 /// Keeps track of mouse motion events, pitch, and yaw
 #[derive(Default)]
-struct InputState {
-    reader_motion: EventReader<MouseMotion>,
+struct InputState<'a> {
+    reader_motion: EventReader<'a, MouseMotion>,
     pitch: f32,
     yaw: f32,
 }
@@ -41,7 +41,7 @@ fn initial_grab_cursor(mut windows: ResMut<Windows>) {
 /// Spawns the `Camera3dBundle` to be controlled
 fn setup_player(commands: &mut Commands) {
     commands
-        .spawn(Camera3dBundle {
+        .spawn(PerspectiveCameraBundle {
             transform: Transform::from_translation(Vec3::new(0., 2., 0.)),
             ..Default::default()
         })
@@ -89,12 +89,11 @@ fn player_look(
     settings: Res<MovementSettings>,
     windows: Res<Windows>,
     mut state: ResMut<InputState>,
-    motion: Res<Events<MouseMotion>>,
     mut query: Query<(&FlyCam, &mut Transform)>,
 ) {
     let window = windows.get_primary().unwrap();
     for (_camera, mut transform) in query.iter_mut() {
-        for ev in state.reader_motion.iter(&motion) {
+        for ev in state.reader_motion.iter() {
             if window.cursor_locked() {
                 state.pitch -= (settings.sensitivity * ev.delta.y * window.height()).to_radians();
                 state.yaw -= (settings.sensitivity * ev.delta.x * window.width()).to_radians();
