@@ -58,8 +58,8 @@ fn player_move(
     let window = windows.get_primary().unwrap();
     for (_camera, mut transform) in query.iter_mut() {
         let mut velocity = Vec3::zero();
-        let forward = -Vec3::new(transform.forward().x, 0., transform.forward().z);
-        let right = Vec3::new(transform.forward().z, 0., -transform.forward().x);
+        let forward = -Vec3::new(transform.local_z().x, 0., transform.local_z().z);
+        let right = Vec3::new(transform.local_z().z, 0., -transform.local_z().x);
 
         for key in keys.get_pressed() {
             if window.cursor_locked() {
